@@ -6,18 +6,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.BundleCompat;
+import androidx.lifecycle.Observer;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Observable;
+
+import java.util.Arrays;
 
 
-public class MainActivity extends AppCompatActivity {
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+
+public class MainActivity extends AppCompatActivity implements Observer<String> { {
 
     EditText txtStudentid;
     TextView txtAnswer;
@@ -41,7 +51,27 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(this); //recieve updates in this class
 
     }
-    public android.database.Observable <String> getServerAnswerNetworkCall(String message) {
+
+    public void sortStudentId(View view){
+        String id = txtStudentid.getText().toString();
+        StringBuilder even = new StringBuilder();
+        StringBuilder odd = new StringBuilder();
+
+        char [] studentId = id.toCharArray();
+
+        Arrays.sort(studentId);
+
+        for (char c : studentId){
+            if (Character.getNumericValue(c) % 2 == 0) {
+                even.append(c);
+            }else{
+                odd.append(c);
+            }
+        }
+
+        txtAnswer.setText(String.format("%s%s", even.toString(), odd.toString()));
+    }
+    public Observable <String> getServerAnswerNetworkCall(String message) {
         return Observable.create(emitter -> {
             Socket socket = new Socket(InetAddress.getByName("se2-isys.aau.at"), 53212);
 
@@ -90,4 +120,4 @@ public void onSubscribe(@NonNull Disposable d){
     public void onComplete(){
 
     }
-}
+}}
